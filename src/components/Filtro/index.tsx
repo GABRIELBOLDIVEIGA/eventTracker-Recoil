@@ -1,34 +1,34 @@
-import React, { useState } from 'react';
-import style from './Filtro.module.scss';
+import React, { useState } from "react";
+import style from "./Filtro.module.scss";
+import { useSetRecoilState } from "recoil";
+import { IFiltroDeEventos } from "../../interfaces/IFiltroDeEventos";
+import { filtroDeEventos } from "../../state/atom";
 
-const Filtro: React.FC<{ aoFiltroAplicado: (data: Date | null) => void }> = ({ aoFiltroAplicado }) => {
-  
-  const [data, setData] = useState('')
-  
-  const submeterForm = (evento: React.FormEvent<HTMLFormElement>) => {
-    evento.preventDefault()
-    if (!data) {
-      aoFiltroAplicado(null)
-      return
-    }
-    aoFiltroAplicado(new Date(data))
-  }
+const Filtro: React.FC = () => {
+    const [data, setData] = useState("");
+    const setFiltroDeEvento = useSetRecoilState<IFiltroDeEventos>(filtroDeEventos);
 
-  return (<form className={style.Filtro} onSubmit={submeterForm}>
-    <h3 className={style.titulo}>Filtrar por data</h3>
-    <input 
-      type="date" 
-      name="data"
-      className={style.input}
-      onChange={evento => setData(evento.target.value)} 
-      placeholder="Por data"
-      value={data} />
+    const submeterForm = (evento: React.FormEvent<HTMLFormElement>) => {
+        evento.preventDefault();
 
-    <button className={style.botao}>
-      Filtrar
-    </button>
+        const filtro: IFiltroDeEventos = {};
+        if (data) {
+            filtro.data = new Date(data);
+        } else {
+            filtro.data = null;
+        }
 
-  </form>)
-}
+        setFiltroDeEvento(filtro);
+    };
 
-export default Filtro
+    return (
+        <form className={style.Filtro} onSubmit={submeterForm}>
+            <h3 className={style.titulo}>Filtrar por data</h3>
+            <input type="date" name="data" className={style.input} onChange={(evento) => setData(evento.target.value)} placeholder="Por data" value={data} />
+
+            <button className={style.botao}>Filtrar</button>
+        </form>
+    );
+};
+
+export default Filtro;
